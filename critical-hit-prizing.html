@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Critical Hit Tournament Prize Calculator</title>
+<style>
+  :root{
+    --bg:#0f1226; --card:#1a1f3a; --card2:#222a4d; --accent:#5b8cff;
+    --accent2:#34d399; --text:#e8ecff; --muted:#9aa4c7; --line:#2c3560;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; font-family:'Segoe UI',system-ui,sans-serif; background:
+    radial-gradient(900px 500px at 80% -10%, #2a3570 0%, transparent 60%), var(--bg);
+    color:var(--text); min-height:100vh; padding:32px 16px;
+  }
+  .wrap{max-width:880px;margin:0 auto;}
+  h1{font-size:26px;margin:0 0 4px;letter-spacing:.3px;}
+  .sub{color:var(--muted);margin:0 0 24px;font-size:14px;}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;margin-bottom:20px;box-shadow:0 8px 30px rgba(0,0,0,.3);}
+  .controls{display:flex;flex-wrap:wrap;gap:24px;align-items:flex-end;}
+  .ctl{flex:1;min-width:220px;}
+  label{display:block;font-size:13px;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px;}
+  .toggle{display:flex;gap:8px;}
+  .toggle button{flex:1;padding:12px;border:1px solid var(--line);background:var(--card2);color:var(--text);border-radius:10px;font-size:16px;font-weight:600;cursor:pointer;transition:.15s;}
+  .toggle button.active{background:linear-gradient(135deg,var(--accent),#7aa2ff);border-color:transparent;box-shadow:0 4px 14px rgba(91,140,255,.4);}
+  input[type=range]{width:100%;accent-color:var(--accent);height:6px;}
+  .count{display:flex;align-items:baseline;gap:10px;}
+  .count .big{font-size:40px;font-weight:700;color:var(--accent2);}
+  .count .lbl{color:var(--muted);font-size:14px;}
+  .num{width:90px;padding:8px;border-radius:8px;border:1px solid var(--line);background:var(--card2);color:var(--text);font-size:18px;text-align:center;}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:8px;}
+  .stat{background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:14px;text-align:center;}
+  .stat .v{font-size:22px;font-weight:700;}
+  .stat .k{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:4px;}
+  .stat.green .v{color:var(--accent2);}
+  .stat.blue .v{color:var(--accent);}
+  table{width:100%;border-collapse:collapse;margin-top:6px;}
+  th,td{padding:11px 14px;text-align:left;font-size:15px;}
+  th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--line);}
+  tbody tr{border-bottom:1px solid rgba(44,53,96,.5);}
+  tbody tr:hover{background:rgba(91,140,255,.07);}
+  td.amt{text-align:right;font-weight:700;color:var(--accent2);font-size:16px;}
+  td.place{font-weight:600;}
+  .badge{display:inline-block;background:var(--card2);border:1px solid var(--line);border-radius:20px;padding:3px 12px;font-size:12px;color:var(--muted);margin-left:8px;}
+  .note{font-size:13px;color:var(--muted);line-height:1.6;margin-top:14px;background:rgba(52,211,153,.06);border:1px solid rgba(52,211,153,.25);border-radius:10px;padding:12px 14px;}
+  .foot{font-size:12px;color:var(--muted);text-align:center;margin-top:18px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Critical Hit Tournament Prize Calculator</h1>
+  <p class="sub">Dynamic prizing that scales to attendance &middot; prizes paid in store credit</p>
+
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl">
+        <label>Entry Fee</label>
+        <div class="toggle">
+          <button id="e20" class="active" onclick="setEntry(20)">$20 Entry</button>
+          <button id="e10" onclick="setEntry(10)">$10 Entry</button>
+        </div>
+      </div>
+      <div class="ctl">
+        <label>Players</label>
+        <div class="count">
+          <input id="num" class="num" type="number" min="1" max="56" value="32" oninput="fromNum()">
+          <span class="lbl">of 56 max</span>
+        </div>
+        <input id="slider" type="range" min="1" max="56" value="32" oninput="fromSlider()" style="margin-top:10px">
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat blue"><div class="v" id="gross">$640</div><div class="k">Entries Collected</div></div>
+      <div class="stat"><div class="v" id="pool">$576</div><div class="k">Prize Pool (90%)</div></div>
+      <div class="stat green"><div class="v" id="paidout">$0</div><div class="k">Credit Paid Out</div></div>
+      <div class="stat"><div class="v" id="keep">$0</div><div class="k">Store Keeps (cash)</div></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <h2 style="margin:0;font-size:18px">Payout <span class="badge" id="placesBadge">Top 12</span></h2>
+    </div>
+    <table>
+      <thead><tr><th>Placement</th><th style="text-align:right">Store Credit</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <div class="note" id="note"></div>
+  </div>
+
+  <div class="panel">
+    <h2 style="margin:0 0 4px;font-size:18px">Store Credit Economics</h2>
+    <p class="sub" style="margin:0 0 16px">Credit costs you less than its face value. Drag to see the room that creates.</p>
+    <label>Your product margin: <span id="mlabel" style="color:var(--accent2);font-weight:700">35%</span></label>
+    <input id="margin" type="range" min="10" max="70" value="35" oninput="render()" style="accent-color:var(--accent2);margin-top:4px">
+    <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:2px">
+      <span>10% &middot; hot sealed</span><span>35% &middot; blended</span><span>70% &middot; singles/accessories</span>
+    </div>
+    <div class="stats" style="grid-template-columns:repeat(3,1fr);margin-top:18px">
+      <div class="stat"><div class="v" id="realcost">$0</div><div class="k">Real cost of prizes</div></div>
+      <div class="stat green"><div class="v" id="trueprofit">$0</div><div class="k">True cash profit</div></div>
+      <div class="stat blue"><div class="v" id="headroom">$0</div><div class="k">Bonus credit to give away</div></div>
+    </div>
+    <div class="note" id="econnote"></div>
+  </div>
+
+  <div class="foot">Pool = 90% of entries &middot; payouts rounded to nearest $5 &middot; real cost of credit is lower than face value</div>
+  <div class="foot" style="margin-top:6px;font-size:13px;color:var(--accent2);font-weight:600">Made by Theeban Siva</div>
+</div>
+
+<script>
+let entry = 20;
+
+// Attendance brackets -> percentage split of the prize pool
+const BRACKETS = [
+  { min:48, label:"Top 16", pct:[26,16,9,9, 5,5,5,5, 2.5,2.5,2.5,2.5,2.5,2.5,2.5,2.5],
+    names:["1st","2nd","3rd","4th","5th","6th","7th","8th","9th","10th","11th","12th","13th","14th","15th","16th"] },
+  { min:32, label:"Top 12", pct:[28,18,10,10, 5.5,5.5,5.5,5.5, 3,3,3,3],
+    names:["1st","2nd","3rd","4th","5th","6th","7th","8th","9th","10th","11th","12th"] },
+  { min:20, label:"Top 8", pct:[32,20,12,12, 6,6,6,6],
+    names:["1st","2nd","3rd","4th","5th","6th","7th","8th"] },
+  { min:12, label:"Top 4", pct:[40,25,17.5,17.5],
+    names:["1st","2nd","3rd","4th"] },
+  { min:1, label:"Top 2", pct:[60,40],
+    names:["1st","2nd"] },
+];
+
+function round5(n){ return Math.round(n/5)*5; }
+
+function getBracket(p){ return BRACKETS.find(b => p >= b.min); }
+
+function setEntry(v){
+  entry = v;
+  document.getElementById('e20').classList.toggle('active', v===20);
+  document.getElementById('e10').classList.toggle('active', v===10);
+  render();
+}
+function fromNum(){
+  let v = Math.max(1, Math.min(56, parseInt(document.getElementById('num').value)||1));
+  document.getElementById('slider').value = v;
+  render();
+}
+function fromSlider(){
+  document.getElementById('num').value = document.getElementById('slider').value;
+  render();
+}
+
+function render(){
+  const players = parseInt(document.getElementById('num').value)||1;
+  const gross = players * entry;
+  const pool = Math.round(gross * 0.90);
+  const b = getBracket(players);
+
+  // Build rows, grouping equal-value consecutive places
+  let rawPayouts = b.pct.map(p => round5(pool * p/100));
+  let totalPaid = rawPayouts.reduce((a,c)=>a+c,0);
+
+  // group consecutive identical amounts
+  let rowsHtml = "";
+  let i = 0;
+  while(i < rawPayouts.length){
+    let j = i;
+    while(j+1 < rawPayouts.length && rawPayouts[j+1] === rawPayouts[i]) j++;
+    let label = (i===j) ? b.names[i] : b.names[i] + "&ndash;" + b.names[j];
+    let count = j - i + 1;
+    let each = rawPayouts[i];
+    let amtCell = count>1 ? `$${each} <span style="color:var(--muted);font-weight:400;font-size:12px">ea</span>` : `$${each}`;
+    rowsHtml += `<tr><td class="place">${label}</td><td class="amt">${amtCell}</td></tr>`;
+    i = j+1;
+  }
+
+  document.getElementById('rows').innerHTML = rowsHtml;
+  document.getElementById('gross').textContent = "$"+gross;
+  document.getElementById('pool').textContent = "$"+pool;
+  document.getElementById('paidout').textContent = "$"+totalPaid;
+  document.getElementById('keep').textContent = "$"+(gross - totalPaid);
+  document.getElementById('placesBadge').textContent = b.label;
+
+  document.getElementById('note').innerHTML =
+    `<b>${players} players &middot; $${entry} entry.</b> You collect <b>$${gross}</b> cash and pay <b>$${totalPaid}</b> in store credit across <b>${b.label}</b>. ` +
+    `Net cash before product cost: <b>$${gross-totalPaid}</b>. The credit gets spent back in-store, and the panel below shows your real cost and giveaway room.`;
+
+  // --- Store credit economics ---
+  const margin = parseInt(document.getElementById('margin').value)/100;
+  document.getElementById('mlabel').textContent = Math.round(margin*100)+"%";
+  const realCost = Math.round(totalPaid*(1-margin));
+  const trueProfit = gross - realCost;
+  const headroom = Math.round(trueProfit/(1-margin));   // extra face-value credit at cash break-even
+  const halfCash = Math.round(trueProfit/2);
+  const halfGiveaway = Math.round((trueProfit/2)/(1-margin));
+  document.getElementById('realcost').textContent = "$"+realCost;
+  document.getElementById('trueprofit').textContent = "$"+trueProfit;
+  document.getElementById('headroom').textContent = "$"+headroom;
+  document.getElementById('econnote').innerHTML =
+    `At a <b>${Math.round(margin*100)}%</b> margin, the <b>$${totalPaid}</b> in prizes really costs you <b>$${realCost}</b>, leaving <b>$${trueProfit}</b> cash in hand. ` +
+    `You could pour all of that back as <b>$${headroom}</b> of extra store credit (raffles, door prizes, participation packs) and still break even on cash, ` +
+    `or split it: pocket <b>$${halfCash}</b> and still hand out <b>$${halfGiveaway}</b> in bonus credit. Any credit that never gets redeemed is pure profit on top.`;
+}
+render();
+</script>
+</body>
+</html>
