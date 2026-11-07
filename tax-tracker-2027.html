@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jacky Mao · Tax Residency Plan 2027</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: #fef5e7;
+    color: #4a3520;
+    min-height: 100vh;
+  }
+
+  .app-wrapper { display: flex; min-height: 100vh; }
+
+  /* ---- left panel ---- */
+  .panel-left {
+    width: 320px;
+    min-width: 320px;
+    background: #fff9f0;
+    padding: 22px 18px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    border-right: 2px solid #f0d9b5;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    box-shadow: 2px 0 12px rgba(200, 150, 80, 0.1);
+  }
+  .panel-left::-webkit-scrollbar { width: 6px; }
+  .panel-left::-webkit-scrollbar-thumb { background: #e8c8a0; border-radius: 3px; }
+
+  .hdr { text-align: center; padding: 8px 0; }
+  .hdr h1 { font-size: 19px; font-weight: 800; color: #c07020; }
+  .hdr .sub { font-size: 11px; color: #b89870; margin-top: 2px; font-weight: 600; }
+  .hdr .by { font-size: 10px; color: #c8b090; margin-top: 4px; font-style: italic; }
+
+  .card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 14px;
+    border: 1.5px solid #f0dcc0;
+    box-shadow: 0 1px 4px rgba(200, 150, 80, 0.08);
+  }
+  .card .ttl {
+    font-size: 11px;
+    color: #c09050;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    font-weight: 700;
+  }
+
+  /* ---- scenario btns ---- */
+  .s-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .s-btn {
+    padding: 10px 8px;
+    border-radius: 12px;
+    border: 2px solid #e8c8a0;
+    background: #fff9f0;
+    color: #a08060;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 800;
+    font-family: 'Nunito', sans-serif;
+    transition: all 0.2s;
+  }
+  .s-btn:hover { transform: scale(1.04); }
+  .s-btn[data-s="monaco"].on { background: #116a6b; border-color: #116a6b; color: #fff; box-shadow: 0 3px 10px rgba(17, 106, 107, 0.35); }
+  .s-btn[data-s="dubai"].on  { background: #1e7040; border-color: #1e7040; color: #fff; box-shadow: 0 3px 10px rgba(30, 112, 64, 0.35); }
+
+  /* ---- mode btns ---- */
+  .m-btns { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  .m-btn {
+    padding: 7px 12px;
+    border-radius: 20px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 700;
+    transition: all 0.2s;
+    background: #fff9f0;
+    color: #a08060;
+    font-family: 'Nunito', sans-serif;
+  }
+  .m-btn:hover { transform: scale(1.06); box-shadow: 0 2px 8px rgba(200, 150, 80, 0.2); }
+  .m-btn.on { transform: scale(1.06); }
+
+  .m-btn[data-m="london"]  { border-color: #56657e; color: #4a5870; }
+  .m-btn[data-m="london"].on  { background: #56657e; color: #fff; box-shadow: 0 3px 10px rgba(86, 101, 126, 0.35); }
+
+  .m-btn[data-m="asia"]    { border-color: #a87818; color: #94680f; }
+  .m-btn[data-m="asia"].on    { background: #a87818; color: #fff; box-shadow: 0 3px 10px rgba(168, 120, 24, 0.35); }
+
+  .m-btn[data-m="nyc"]     { border-color: #2868a8; color: #2868a8; }
+  .m-btn[data-m="nyc"].on     { background: #2868a8; color: #fff; box-shadow: 0 3px 10px rgba(40, 104, 168, 0.35); }
+
+  .m-btn[data-m="toronto"] { border-color: #c04838; color: #c04838; }
+  .m-btn[data-m="toronto"].on { background: #c04838; color: #fff; box-shadow: 0 3px 10px rgba(192, 72, 56, 0.35); }
+
+  .m-btn[data-m="monaco"]  { border-color: #1a8a8a; color: #137a7a; }
+  .m-btn[data-m="monaco"].on  { background: #1a8a8a; color: #fff; box-shadow: 0 3px 10px rgba(26, 138, 138, 0.35); }
+
+  .m-btn[data-m="dubai"]   { border-color: #2a8a50; color: #2a8a50; }
+  .m-btn[data-m="dubai"].on   { background: #2a8a50; color: #fff; box-shadow: 0 3px 10px rgba(42, 138, 80, 0.35); }
+
+  .m-btn[data-m="other"]   { border-color: #8050a0; color: #8050a0; }
+  .m-btn[data-m="other"].on   { background: #8050a0; color: #fff; box-shadow: 0 3px 10px rgba(128, 80, 160, 0.35); }
+
+  .m-btn[data-m="flight"]  { border-color: #d08020; color: #c07018; }
+  .m-btn[data-m="flight"].on  { background: #d08020; color: #fff; box-shadow: 0 3px 10px rgba(208, 128, 32, 0.35); }
+
+  .m-btn[data-m="eraser"]  { border-color: #b06068; color: #a05058; }
+  .m-btn[data-m="eraser"].on  { background: #b06068; color: #fff; box-shadow: 0 3px 10px rgba(176, 96, 104, 0.35); }
+
+  /* flight pickers */
+  .fl-pick { margin-top: 10px; display: none; gap: 8px; }
+  .fl-pick.vis { display: grid; grid-template-columns: 1fr 1fr; }
+  .fl-pick label { font-size: 11px; color: #a08060; display: block; margin-bottom: 5px; font-weight: 600; }
+  .fl-pick select {
+    width: 100%;
+    padding: 8px 10px;
+    border-radius: 10px;
+    border: 1.5px solid #f0dcc0;
+    background: #fff9f0;
+    color: #6a4a30;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 600;
+  }
+
+  /* ---- totals ---- */
+  .t-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 7px 0;
+    border-bottom: 1px solid #f5e8d5;
+  }
+  .t-row:last-of-type { border-bottom: none; }
+  .t-lbl { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: #8a6848; }
+  .t-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .t-dot.c-lon { background: #56657e; }
+  .t-dot.c-asi { background: #a87818; }
+  .t-dot.c-nyc { background: #2868a8; }
+  .t-dot.c-tor { background: #c04838; }
+  .t-dot.c-mon { background: #1a8a8a; }
+  .t-dot.c-dub { background: #2a8a50; }
+  .t-dot.c-oth { background: #8050a0; }
+  .t-dot.c-flt { background: #d08020; }
+  .t-val { font-size: 22px; font-weight: 800; }
+  .t-val.c-lon { color: #3e4c62; }
+  .t-val.c-asi { color: #8a600c; }
+  .t-val.c-nyc { color: #1e5890; }
+  .t-val.c-tor { color: #a03828; }
+  .t-val.c-mon { color: #116a6b; }
+  .t-val.c-dub { color: #1e7040; }
+  .t-val.c-oth { color: #6a3890; }
+  .t-val.c-flt { color: #b06810; }
+  .t-info { font-size: 11px; color: #b89870; padding: 6px 0 0; font-weight: 600; }
+
+  /* buffers */
+  .buf { font-size: 13px; padding: 4px 0; font-weight: 600; }
+  .buf-pos { color: #1e7040; }
+  .buf-neg { color: #a03828; }
+  .buf-eq { color: #b08010; }
+  .buf-mut { color: #8a6848; }
+  .buf-sep { border-top: 1px solid #f5e8d5; margin-top: 6px; padding-top: 8px; }
+
+  /* warnings */
+  .wrn {
+    padding: 8px 11px;
+    border-radius: 10px;
+    margin-bottom: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    display: none;
+  }
+  .wrn.vis { display: block; }
+  .wrn-r { background: #fce8e6; color: #a03030; border-left: 3px solid #d05848; }
+  .wrn-y { background: #fdf3e0; color: #906818; border-left: 3px solid #d09830; }
+  .ok-msg { font-size: 12px; color: #b89870; display: none; font-weight: 600; }
+  .ok-msg.vis { display: block; }
+
+  /* rules */
+  .rule { font-size: 11.5px; color: #8a6848; font-weight: 600; line-height: 1.45; padding: 4px 0; }
+  .rule b { color: #6a4a30; }
+  .us-in { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 6px 0 4px; }
+  .us-in label { font-size: 11px; color: #a08060; font-weight: 700; }
+  .us-in input {
+    width: 100%;
+    margin-top: 3px;
+    padding: 6px 8px;
+    border-radius: 8px;
+    border: 1.5px solid #f0dcc0;
+    background: #fff9f0;
+    color: #6a4a30;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+  }
+
+  .rst {
+    margin-top: auto;
+    padding: 10px;
+    border-radius: 12px;
+    border: 2px solid #b06068;
+    background: transparent;
+    color: #b06068;
+    cursor: pointer;
+    font-size: 12px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    transition: all 0.2s;
+  }
+  .rst:hover { background: #b06068; color: #fff; }
+
+  .paws { text-align: center; font-size: 12px; color: #e0c8a8; margin-top: 12px; letter-spacing: 4px; }
+
+  /* ---- calendar area ---- */
+  .cal-area { flex: 1; padding: 24px; overflow-y: auto; }
+
+  .yr {
+    font-size: 32px;
+    font-weight: 800;
+    color: #c07020;
+    margin: 26px 0 4px;
+    text-align: center;
+  }
+  .yr-sub { text-align: center; font-size: 12px; color: #b89870; font-weight: 600; margin-bottom: 18px; }
+
+  /* plan strip */
+  .plan { max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+  .pl-box {
+    background: #fff;
+    border-radius: 16px;
+    padding: 14px 16px;
+    border: 1.5px solid #f0dcc0;
+    box-shadow: 0 2px 8px rgba(200, 150, 80, 0.08);
+  }
+  .pl-ttl { font-size: 11px; color: #c09050; text-transform: uppercase; letter-spacing: 1.2px; font-weight: 700; margin-bottom: 8px; }
+  .pl-split { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .sc-col { cursor: pointer; transition: all 0.2s; border-width: 2px; }
+  .sc-col:hover { box-shadow: 0 4px 16px rgba(200, 150, 80, 0.16); }
+  .sc-col[data-s="monaco"].on { border-color: #1a8a8a; box-shadow: 0 3px 14px rgba(26, 138, 138, 0.22); }
+  .sc-col[data-s="dubai"].on  { border-color: #2a8a50; box-shadow: 0 3px 14px rgba(42, 138, 80, 0.22); }
+  .sc-col .pl-ttl { font-size: 13px; letter-spacing: 0.4px; text-transform: none; color: #6a4a30; font-weight: 800; }
+
+  .leg { display: flex; align-items: baseline; gap: 8px; padding: 5px 0; font-size: 13px; font-weight: 600; color: #8a6848; border-bottom: 1px solid #f5e8d5; }
+  .leg:last-child { border-bottom: none; }
+  .lg-dot { width: 9px; height: 9px; border-radius: 50%; flex: none; position: relative; top: 1px; }
+  .leg b { color: #4a3520; font-weight: 800; min-width: 74px; }
+  .lg-dt { flex: 1; }
+  .lg-n { font-weight: 800; color: #6a4a30; white-space: nowrap; }
+  .lg-sub { display: block; font-size: 11px; color: #b89870; font-weight: 600; }
+
+  .pl-note { font-size: 13px; color: #8a6848; font-weight: 600; line-height: 1.55; }
+  .pl-note b { color: #4a3520; }
+
+  .grid-months {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .mo-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 14px;
+    border: 1.5px solid #f0dcc0;
+    box-shadow: 0 2px 8px rgba(200, 150, 80, 0.08);
+  }
+  .mo-card:hover { box-shadow: 0 4px 16px rgba(200, 150, 80, 0.16); }
+  .mo-card.prev { border-style: dashed; }
+  .mo-nm { font-size: 14px; font-weight: 800; color: #c07020; margin-bottom: 10px; text-align: center; }
+  .mo-nm small { display: block; font-size: 10px; color: #c0a880; font-weight: 600; }
+
+  .wk-hd { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; margin-bottom: 4px; }
+  .wk-hd span { text-align: center; font-size: 10px; color: #c0a880; font-weight: 700; padding: 2px; }
+
+  .d-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+
+  .dc {
+    aspect-ratio: 1;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.15s;
+    background: #fef5e7;
+    min-height: 32px;
+    border: 1px solid #f0e0c8;
+  }
+  .dc:hover { transform: scale(1.12); z-index: 2; box-shadow: 0 3px 10px rgba(200, 150, 80, 0.25); }
+  .dc.nil { background: transparent; cursor: default; border: none; }
+  .dc.nil:hover { transform: none; box-shadow: none; }
+
+  .dn { font-size: 8px; color: #c0a880; position: absolute; top: 2px; left: 3px; font-weight: 600; }
+  .dl { font-size: 11px; font-weight: 800; }
+
+  /* filled cells */
+  .dc.s-london, .dc.s-asia, .dc.s-nyc, .dc.s-toronto,
+  .dc.s-monaco, .dc.s-dubai, .dc.s-other, .dc.s-flight { border-color: transparent; }
+  .dc.s-london  { background: #3e4c62; }
+  .dc.s-asia    { background: #8a600c; }
+  .dc.s-nyc     { background: #1e5890; }
+  .dc.s-toronto { background: #a83828; }
+  .dc.s-monaco  { background: #116a6b; }
+  .dc.s-dubai   { background: #1e7040; }
+  .dc.s-other   { background: #6a3890; }
+  .dc[class*="s-"] .dl { color: #fff; }
+  .dc[class*="s-"] .dn { color: rgba(255,255,255,0.55); }
+
+  .dc.s-flight  { background: linear-gradient(135deg, var(--fc1) 50%, var(--fc2) 50%); }
+  .dc.s-flight .dl  { font-size: 9px; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+
+  .wb {
+    position: absolute; top: -3px; right: -3px;
+    font-size: 8px; background: #d06878; color: #fff;
+    border-radius: 50%; width: 15px; height: 15px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 1px 4px rgba(208, 104, 120, 0.4);
+  }
+
+  @media (max-width: 1200px) { .grid-months { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 800px) {
+    .app-wrapper { flex-direction: column; }
+    .panel-left { width: 100%; min-width: unset; height: auto; position: relative; }
+    .cal-area { padding: 16px; }
+    .pl-split { grid-template-columns: 1fr; }
+    .grid-months { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="app-wrapper">
+  <div class="panel-left">
+    <div class="hdr">
+      <h1>Jacky Mao</h1>
+      <div class="sub">Tax Residency Plan · 2027</div>
+      <div class="by">Prepared by Theeban Siva</div>
+    </div>
+
+    <div class="card">
+      <div class="ttl">🐾 Scenario</div>
+      <div class="s-btns">
+        <button class="s-btn on" data-s="monaco">🇲🇨 If Monaco</button>
+        <button class="s-btn" data-s="dubai">🇦🇪 If Dubai</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ttl">🐾 Select Mode</div>
+      <div class="m-btns">
+        <button class="m-btn on" data-m="london">🇬🇧 London</button>
+        <button class="m-btn" data-m="asia">🌏 Asia</button>
+        <button class="m-btn" data-m="nyc">🇺🇸 New York</button>
+        <button class="m-btn" data-m="toronto">🇨🇦 Toronto</button>
+        <button class="m-btn" data-m="monaco">🇲🇨 Monaco</button>
+        <button class="m-btn" data-m="dubai">🇦🇪 Dubai</button>
+        <button class="m-btn" data-m="other">🗺️ Other</button>
+        <button class="m-btn" data-m="flight">✈️ Flight</button>
+        <button class="m-btn" data-m="eraser">✕ Clear</button>
+      </div>
+      <div class="fl-pick" id="fpick">
+        <div>
+          <label>From</label>
+          <select id="fFrom"></select>
+        </div>
+        <div>
+          <label>To</label>
+          <select id="fTo"></select>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ttl">🐾 Day Count · 2027</div>
+      <div class="t-row" data-r="london"><span class="t-lbl"><span class="t-dot c-lon"></span> London</span><span class="t-val c-lon" id="v-london">0</span></div>
+      <div class="t-row" data-r="asia"><span class="t-lbl"><span class="t-dot c-asi"></span> Asia</span><span class="t-val c-asi" id="v-asia">0</span></div>
+      <div class="t-row" data-r="nyc"><span class="t-lbl"><span class="t-dot c-nyc"></span> New York</span><span class="t-val c-nyc" id="v-nyc">0</span></div>
+      <div class="t-row" data-r="toronto"><span class="t-lbl"><span class="t-dot c-tor"></span> Toronto</span><span class="t-val c-tor" id="v-toronto">0</span></div>
+      <div class="t-row" data-r="monaco"><span class="t-lbl"><span class="t-dot c-mon"></span> Monaco</span><span class="t-val c-mon" id="v-monaco">0</span></div>
+      <div class="t-row" data-r="dubai"><span class="t-lbl"><span class="t-dot c-dub"></span> Dubai</span><span class="t-val c-dub" id="v-dubai">0</span></div>
+      <div class="t-row" data-r="other"><span class="t-lbl"><span class="t-dot c-oth"></span> Other</span><span class="t-val c-oth" id="v-other">0</span></div>
+      <div class="t-row"><span class="t-lbl"><span class="t-dot c-flt"></span> Flight Days</span><span class="t-val c-flt" id="v-flight">0</span></div>
+      <div class="t-info" id="tMeta">Assigned: 0 / 365</div>
+    </div>
+
+    <div class="card">
+      <div class="ttl" id="chkTtl">🐾 Monaco Check</div>
+      <div id="chk"></div>
+      <div class="buf-sep">
+        <div class="buf" id="bUs"></div>
+        <div class="buf" id="bCa"></div>
+        <div class="buf" id="bUk"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ttl">🐾 Warnings</div>
+      <div class="wrn wrn-r" id="w1"></div>
+      <div class="wrn wrn-r" id="w2"></div>
+      <div class="wrn wrn-y" id="w3">🟡 US weighted count is getting close to 183</div>
+      <div class="wrn wrn-r" id="w4">🔴 US weighted count at or over 183: US tax resident for 2027</div>
+      <div class="wrn wrn-y" id="w5">🟡 Toronto approaching Canada 183-day limit</div>
+      <div class="wrn wrn-r" id="w6">🔴 Toronto at or over Canada 183-day threshold!</div>
+      <div class="wrn wrn-y" id="w7">🟡 London over 90 UK midnights: 3 UK ties now make him resident (4 needed up to 90)</div>
+      <div class="wrn wrn-r" id="w8">🔴 London over 120 UK midnights: 2 ties (a London home plus working there) are enough to make him UK resident</div>
+      <div class="ok-msg vis" id="wOk">🐾 All clear, no warnings</div>
+    </div>
+
+    <div class="card">
+      <div class="ttl">🐾 Rules Used</div>
+      <div class="rule"><b>Monaco plan:</b> Monaco's day count has to beat every other country.</div>
+      <div class="rule"><b>Dubai plan:</b> 90+ days in Dubai.</div>
+      <div class="rule"><b>US:</b> 2027 days + 2026 days ÷ 3 + 2025 days ÷ 6 must stay under 183.</div>
+      <div class="us-in">
+        <label>US days 2026<input type="number" id="u26" min="0" max="366"></label>
+        <label>US days 2025<input type="number" id="u25" min="0" max="366"></label>
+      </div>
+      <div class="rule"><b>Canada:</b> under 183 days.</div>
+      <div class="rule"><b>UK:</b> counts midnights in the UK tax year (Apr 6 to Apr 5), so all of London falls in 2026/27. Arriving fresh, 46 to 90 midnights needs all 4 UK ties to be resident, 91 to 120 needs 3, 121 to 182 needs 2.</div>
+      <div class="rule"><b>Travel days</b> count for both places, same as the 2026 tracker. That is why Toronto reads 57 / 71 here against 56 / 70 nights in the plan.</div>
+    </div>
+
+    <button class="rst" id="rstBtn">Reset to Plan</button>
+    <div class="paws">🐾 🐾 🐾</div>
+  </div>
+
+  <div class="cal-area">
+    <div class="plan">
+      <div class="pl-box">
+        <div class="pl-ttl">🐾 Same either way</div>
+        <div class="leg"><span class="lg-dot" style="background:#56657e"></span><b>London</b><span class="lg-dt">Sat Dec 12 to Sat Mar 6</span><span class="lg-n">84 midnights</span></div>
+        <div class="leg"><span class="lg-dot" style="background:#a87818"></span><b>Asia</b><span class="lg-dt">Sat Mar 6 to Sat Apr 3<span class="lg-sub">💍 Hop to Singapore for Pepe's wedding, Sat Mar 27</span></span><span class="lg-n">28 days</span></div>
+        <div class="leg"><span class="lg-dot" style="background:#2868a8"></span><b>New York</b><span class="lg-dt">Sat Apr 3 to Sat May 29</span><span class="lg-n">57 days</span></div>
+      </div>
+
+      <div class="pl-split">
+        <div class="pl-box sc-col on" data-s="monaco">
+          <div class="pl-ttl">🇲🇨 If Monaco</div>
+          <div class="leg"><span class="lg-dot" style="background:#c04838"></span><b>Toronto</b><span class="lg-dt">Sat May 29 to Sat Jul 24<span class="lg-sub">💍 Wedding Jun 19</span></span><span class="lg-n">56 days</span></div>
+          <div class="leg"><span class="lg-dot" style="background:#2868a8"></span><b>New York</b><span class="lg-dt">Sat Jul 24 to Sat Sep 11<span class="lg-sub">US total 107</span></span><span class="lg-n">50 days</span></div>
+          <div class="leg"><span class="lg-dot" style="background:#1a8a8a"></span><b>Monaco</b><span class="lg-dt">From Sat Sep 11<span class="lg-sub">Ahead of New York by 5</span></span><span class="lg-n">112 days</span></div>
+        </div>
+        <div class="pl-box sc-col" data-s="dubai">
+          <div class="pl-ttl">🇦🇪 If Dubai</div>
+          <div class="leg"><span class="lg-dot" style="background:#c04838"></span><b>Toronto</b><span class="lg-dt">Sat May 29 to Sat Aug 7<span class="lg-sub">💍 Wedding Jun 19</span></span><span class="lg-n">70 days</span></div>
+          <div class="leg"><span class="lg-dot" style="background:#2868a8"></span><b>New York</b><span class="lg-dt">Sat Aug 7 to Sat Sep 25<span class="lg-sub">US total 107</span></span><span class="lg-n">50 days</span></div>
+          <div class="leg"><span class="lg-dot" style="background:#2a8a50"></span><b>Dubai</b><span class="lg-dt">From Sat Sep 25<span class="lg-sub">Reaches the 90 day requirement on Dec 23</span></span><span class="lg-n">98 days</span></div>
+        </div>
+      </div>
+
+      <div class="pl-box">
+        <div class="pl-ttl">🐾 The difference between the two</div>
+        <div class="pl-note">
+          The first half is the same either way. London, Asia and the first New York block do not change.
+          <b>Monaco</b> requires its day count to be higher than every other country, so Toronto gives up two weeks and Monaco starts earlier, on Sep 11, with 112 days.
+          <b>Dubai</b> only requires 90 days, so the two weeks go to Toronto instead. Dubai starts Sep 25 with 98 days and still clears the requirement on Dec 23, with 8 days to spare.
+          <br><b>In short:</b> Monaco maximizes the anchor count, Dubai buys two additional weeks in Toronto.
+        </div>
+      </div>
+    </div>
+
+    <div class="yr">2027</div>
+    <div class="yr-sub">Starts with the December 2026 London lead-in · click or drag to change days</div>
+    <div class="grid-months" id="cal"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var MO = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var WK = ['Mo','Tu','We','Th','Fr','Sa','Su'];
+
+  // Dec 2026 lead-in, then all of 2027
+  var MONTHS = [[2026, 11]];
+  for(var i = 0; i < 12; i++) MONTHS.push([2027, i]);
+
+  var LOCS = ['london','asia','nyc','toronto','monaco','dubai','other'];
+  var NM = { london:'London', asia:'Asia', nyc:'New York', toronto:'Toronto', monaco:'Monaco', dubai:'Dubai', other:'Other' };
+  var CTRY = { london:'UK', asia:'Asia', nyc:'US', toronto:'Canada', monaco:'Monaco', dubai:'UAE', other:'Other' };
+  var FLAG = { london:'🇬🇧', asia:'🌏', nyc:'🇺🇸', toronto:'🇨🇦', monaco:'🇲🇨', dubai:'🇦🇪', other:'🗺️' };
+  var LB = { london:'L', asia:'A', nyc:'N', toronto:'T', monaco:'M', dubai:'D', other:'O' };
+  var COL = { london:'#3e4c62', asia:'#8a600c', nyc:'#1e5890', toronto:'#a83828', monaco:'#116a6b', dubai:'#1e7040', other:'#6a3890' };
+  var BADGE = { '2027-2-27':"Pepe's wedding, Singapore", '2027-5-19':'Wedding' };
+
+  var PLAN_V = 1;
+  var scen = 'monaco';
+  var mode = 'london';
+  var data = {};
+  var us = { y26: 176, y25: 12 };
+  var drag = false;
+
+  function key(y, m, d){ return y + '-' + m + '-' + d; }
+  function dim(y, m){ return new Date(y, m + 1, 0).getDate(); }
+  function fdow(y, m){ return (new Date(y, m, 1).getDay() + 6) % 7; }
+
+  // fill a to b (inclusive), each [y, m, d]
+  function span(o, a, b, loc){
+    var t = new Date(a[0], a[1], a[2]);
+    var e = new Date(b[0], b[1], b[2]);
+    while(t <= e){
+      o[key(t.getFullYear(), t.getMonth(), t.getDate())] = { t: loc };
+      t.setDate(t.getDate() + 1);
+    }
+  }
+  function hop(o, at, f, to){
+    o[key(at[0], at[1], at[2])] = { t: 'flight', f: f, to: to };
+  }
+
+  function plan(s){
+    var o = {};
+    span(o, [2026,11,12], [2027,2,5], 'london');
+    hop(o, [2027,2,6], 'london', 'asia');
+    span(o, [2027,2,7], [2027,3,2], 'asia');
+    hop(o, [2027,3,3], 'asia', 'nyc');
+    span(o, [2027,3,4], [2027,4,28], 'nyc');
+    hop(o, [2027,4,29], 'nyc', 'toronto');
+    if(s === 'monaco'){
+      span(o, [2027,4,30], [2027,6,23], 'toronto');
+      hop(o, [2027,6,24], 'toronto', 'nyc');
+      span(o, [2027,6,25], [2027,8,10], 'nyc');
+      hop(o, [2027,8,11], 'nyc', 'monaco');
+      span(o, [2027,8,12], [2027,11,31], 'monaco');
+    } else {
+      span(o, [2027,4,30], [2027,7,6], 'toronto');
+      hop(o, [2027,7,7], 'toronto', 'nyc');
+      span(o, [2027,7,8], [2027,8,24], 'nyc');
+      hop(o, [2027,8,25], 'nyc', 'dubai');
+      span(o, [2027,8,26], [2027,11,31], 'dubai');
+    }
+    return o;
+  }
+
+  function init(){
+    try { scen = localStorage.getItem('jm-tax-27-scen') || 'monaco'; } catch(e){}
+    try {
+      var u = JSON.parse(localStorage.getItem('jm-tax-27-us'));
+      if(u) us = u;
+    } catch(e){}
+    fillPickers();
+    bindModes();
+    bindScen();
+    bindUs();
+    setScen(scen);
+    document.onmouseup = function(){ drag = false; };
+    document.getElementById('rstBtn').onclick = function(){
+      if(!confirm('Reset the ' + NM[scen] + ' calendar back to the plan?')) return;
+      data = plan(scen);
+      save();
+      draw();
+      calc();
+    };
+  }
+
+  function fillPickers(){
+    var a = document.getElementById('fFrom');
+    var b = document.getElementById('fTo');
+    for(var i = 0; i < LOCS.length; i++){
+      var l = LOCS[i];
+      a.add(new Option(FLAG[l] + ' ' + NM[l], l));
+      b.add(new Option(FLAG[l] + ' ' + NM[l], l));
+    }
+    a.value = 'nyc';
+    b.value = 'toronto';
+  }
+
+  function bindModes(){
+    var btns = document.querySelectorAll('.m-btn');
+    for(var i = 0; i < btns.length; i++){
+      (function(b){
+        b.onclick = function(){
+          mode = b.getAttribute('data-m');
+          for(var j = 0; j < btns.length; j++) btns[j].classList.remove('on');
+          b.classList.add('on');
+          var fp = document.getElementById('fpick');
+          if(mode === 'flight') fp.classList.add('vis');
+          else fp.classList.remove('vis');
+        };
+      })(btns[i]);
+    }
+  }
+
+  function bindScen(){
+    var els = document.querySelectorAll('.s-btn, .sc-col');
+    for(var i = 0; i < els.length; i++){
+      (function(el){
+        el.onclick = function(){ setScen(el.getAttribute('data-s')); };
+      })(els[i]);
+    }
+  }
+
+  function bindUs(){
+    var a = document.getElementById('u26');
+    var b = document.getElementById('u25');
+    a.value = us.y26;
+    b.value = us.y25;
+    a.oninput = b.oninput = function(){
+      us = { y26: +a.value || 0, y25: +b.value || 0 };
+      try { localStorage.setItem('jm-tax-27-us', JSON.stringify(us)); } catch(e){}
+      calc();
+    };
+  }
+
+  function setScen(s){
+    scen = s;
+    try { localStorage.setItem('jm-tax-27-scen', s); } catch(e){}
+    var els = document.querySelectorAll('.s-btn, .sc-col');
+    for(var i = 0; i < els.length; i++){
+      els[i].classList.toggle('on', els[i].getAttribute('data-s') === s);
+    }
+    document.getElementById('chkTtl').textContent = '🐾 ' + NM[s] + ' Check';
+    load();
+    draw();
+    calc();
+  }
+
+  function draw(){
+    var el = document.getElementById('cal');
+    el.innerHTML = '';
+
+    for(var i = 0; i < MONTHS.length; i++){
+      var y = MONTHS[i][0], m = MONTHS[i][1];
+      var c = document.createElement('div');
+      c.className = 'mo-card' + (y === 2026 ? ' prev' : '');
+
+      var nm = document.createElement('div');
+      nm.className = 'mo-nm';
+      nm.textContent = MO[m] + (y === 2026 ? ' 2026' : '');
+      if(y === 2026){
+        var sm = document.createElement('small');
+        sm.textContent = 'Lead-in, counts toward 2026';
+        nm.appendChild(sm);
+      }
+      c.appendChild(nm);
+
+      var hd = document.createElement('div');
+      hd.className = 'wk-hd';
+      for(var w = 0; w < 7; w++){
+        var s = document.createElement('span');
+        s.textContent = WK[w];
+        hd.appendChild(s);
+      }
+      c.appendChild(hd);
+
+      var g = document.createElement('div');
+      g.className = 'd-grid';
+
+      var f = fdow(y, m);
+      for(var p = 0; p < f; p++){
+        var blank = document.createElement('div');
+        blank.className = 'dc nil';
+        g.appendChild(blank);
+      }
+
+      var n = dim(y, m);
+      for(var d = 1; d <= n; d++){
+        var cell = document.createElement('div');
+        var k = key(y, m, d);
+        cell.className = 'dc';
+        cell.setAttribute('data-k', k);
+
+        var dn = document.createElement('span');
+        dn.className = 'dn';
+        dn.textContent = d;
+        cell.appendChild(dn);
+
+        var dl = document.createElement('span');
+        dl.className = 'dl';
+        cell.appendChild(dl);
+
+        if(BADGE[k]){
+          var wb = document.createElement('span');
+          wb.className = 'wb';
+          wb.textContent = '💍';
+          wb.title = BADGE[k];
+          cell.appendChild(wb);
+        }
+
+        (function(key, cel){
+          cel.onmousedown = function(e){
+            drag = true;
+            paint(key);
+            e.preventDefault();
+          };
+          cel.onmouseenter = function(){
+            if(drag) paint(key);
+          };
+        })(k, cell);
+
+        g.appendChild(cell);
+        style(cell, k);
+      }
+
+      c.appendChild(g);
+      el.appendChild(c);
+    }
+  }
+
+  function paint(k){
+    if(mode === 'eraser'){
+      delete data[k];
+    } else if(mode === 'flight'){
+      var a = document.getElementById('fFrom').value;
+      var b = document.getElementById('fTo').value;
+      data[k] = (a === b) ? { t: a } : { t: 'flight', f: a, to: b };
+    } else {
+      data[k] = { t: mode };
+    }
+    var cel = document.querySelector('[data-k="' + k + '"]');
+    if(cel) style(cel, k);
+    calc();
+    save();
+  }
+
+  function style(cel, k){
+    var d = data[k];
+    var p = k.split('-');
+    var tip = MO[+p[1]].slice(0, 3) + ' ' + p[2] + ', ' + p[0];
+    cel.className = 'dc';
+    cel.style.removeProperty('--fc1');
+    cel.style.removeProperty('--fc2');
+    var dl = cel.querySelector('.dl');
+
+    if(!d){
+      dl.textContent = '';
+    } else if(d.t === 'flight'){
+      cel.classList.add('s-flight');
+      cel.style.setProperty('--fc1', COL[d.f]);
+      cel.style.setProperty('--fc2', COL[d.to]);
+      dl.textContent = LB[d.f] + '→' + LB[d.to];
+      tip += ' · ' + NM[d.f] + ' to ' + NM[d.to];
+    } else {
+      cel.classList.add('s-' + d.t);
+      dl.textContent = LB[d.t] || '';
+      tip += ' · ' + NM[d.t];
+    }
+    if(BADGE[k]) tip += ' · ' + BADGE[k];
+    cel.title = tip;
+  }
+
+  function sd(m, d){ return MO[m].slice(0, 3) + ' ' + d; }
+
+  function calc(){
+    var c = { flight: 0, used: 0 };
+    for(var i = 0; i < LOCS.length; i++) c[LOCS[i]] = 0;
+    var hit90 = null;
+
+    // calendar year 2027, in date order
+    for(var m = 0; m < 12; m++){
+      var n = dim(2027, m);
+      for(var d = 1; d <= n; d++){
+        var e = data[key(2027, m, d)];
+        if(!e) continue;
+        c.used++;
+        if(e.t === 'flight'){
+          c.flight++;
+          c[e.f]++;
+          c[e.to]++;
+        } else {
+          c[e.t]++;
+        }
+        if(!hit90 && c[scen] === 90) hit90 = sd(m, d);
+      }
+    }
+
+    // UK midnights, tax year Apr 6 2026 to Apr 5 2027 (where he sleeps = arrival side)
+    var uk = 0;
+    for(var k in data){
+      if(!data.hasOwnProperty(k)) continue;
+      var p = k.split('-');
+      var dt = new Date(+p[0], +p[1], +p[2]);
+      if(dt < new Date(2026, 3, 6) || dt > new Date(2027, 3, 5)) continue;
+      var x = data[k];
+      if((x.t === 'flight' ? x.to : x.t) === 'london') uk++;
+    }
+
+    for(var j = 0; j < LOCS.length; j++){
+      var l = LOCS[j];
+      document.getElementById('v-' + l).textContent = c[l];
+      // hide the other anchor when it is not used
+      var row = document.querySelector('.t-row[data-r="' + l + '"]');
+      var spare = (l === 'monaco' || l === 'dubai') && l !== scen && c[l] === 0;
+      row.style.display = spare ? 'none' : '';
+    }
+    document.getElementById('v-flight').textContent = c.flight;
+    document.getElementById('tMeta').textContent = 'Assigned: ' + c.used + ' / 365 in 2027 · Unassigned: ' + (365 - c.used);
+
+    // anchor check
+    var box = document.getElementById('chk');
+    box.innerHTML = '';
+    var behind = [];
+    function line(txt, cls){
+      var b = document.createElement('div');
+      b.className = 'buf ' + cls;
+      b.textContent = txt;
+      box.appendChild(b);
+    }
+    if(scen === 'monaco'){
+      var rivals = [];
+      for(var r = 0; r < LOCS.length; r++){
+        var rl = LOCS[r];
+        if(rl !== 'monaco' && c[rl] > 0) rivals.push(rl);
+      }
+      rivals.sort(function(a, b){ return c[b] - c[a]; });
+      for(var q = 0; q < rivals.length; q++){
+        var lead = c.monaco - c[rivals[q]];
+        if(lead <= 0) behind.push(CTRY[rivals[q]]);
+        line('Monaco vs ' + CTRY[rivals[q]] + ': ' + (lead >= 0 ? '+' : '') + lead + ' days',
+          lead > 0 ? 'buf-pos' : lead < 0 ? 'buf-neg' : 'buf-eq');
+      }
+      if(!rivals.length) line('Monaco: ' + c.monaco + ' days', 'buf-mut');
+    } else {
+      var room = c.dubai - 90;
+      line('Dubai: ' + c.dubai + ' of 90 needed (' + (room >= 0 ? '+' : '') + room + ')',
+        room > 0 ? 'buf-pos' : room < 0 ? 'buf-neg' : 'buf-eq');
+      line(hit90 ? '90th Dubai day: ' + hit90 : '90th Dubai day: not reached in 2027', hit90 ? 'buf-pos' : 'buf-neg');
+    }
+
+    // US substantial presence
+    var carry = us.y26 / 3 + us.y25 / 6;
+    var wt = c.nyc + carry;
+    var maxUs = Math.ceil(183 - carry) - 1;
+    var bU = document.getElementById('bUs');
+    bU.textContent = 'US weighted: ' + wt.toFixed(1) + ' / 183 (max ' + maxUs + ' US days in 2027)';
+    bU.className = 'buf ' + (wt >= 183 ? 'buf-neg' : wt >= 178 ? 'buf-eq' : 'buf-pos');
+
+    var bC = document.getElementById('bCa');
+    bC.textContent = 'Canada: ' + c.toronto + ' / 183 days';
+    bC.className = 'buf ' + (c.toronto >= 183 ? 'buf-neg' : c.toronto >= 170 ? 'buf-eq' : 'buf-pos');
+
+    var bK = document.getElementById('bUk');
+    bK.textContent = 'UK midnights 2026/27: ' + uk + (uk <= 90 ? ' (' + (90 - uk) + ' before the next band)' : '');
+    bK.className = 'buf ' + (uk > 120 ? 'buf-neg' : uk > 90 ? 'buf-eq' : 'buf-pos');
+
+    var any = false;
+    function chk(id, cond, txt){
+      var e = document.getElementById(id);
+      if(txt) e.textContent = txt;
+      if(cond){ e.classList.add('vis'); any = true; }
+      else { e.classList.remove('vis'); }
+    }
+    chk('w1', scen === 'monaco' && behind.length > 0, '🔴 Monaco is not ahead of ' + behind.join(', ') + '!');
+    chk('w2', scen === 'dubai' && c.dubai < 90, '🔴 Dubai is under the 90 day requirement (' + c.dubai + ')');
+    chk('w3', wt >= 178 && wt < 183);
+    chk('w4', wt >= 183);
+    chk('w5', c.toronto >= 170 && c.toronto < 183);
+    chk('w6', c.toronto >= 183);
+    chk('w7', uk > 90 && uk <= 120);
+    chk('w8', uk > 120);
+
+    var ok = document.getElementById('wOk');
+    if(any) ok.classList.remove('vis');
+    else ok.classList.add('vis');
+  }
+
+  function save(){
+    try { localStorage.setItem('jm-tax-27-' + scen, JSON.stringify({ v: PLAN_V, d: data })); } catch(e){}
+  }
+
+  function load(){
+    try {
+      var s = JSON.parse(localStorage.getItem('jm-tax-27-' + scen));
+      if(s && s.v === PLAN_V && s.d){
+        data = s.d;
+        return;
+      }
+    } catch(e){}
+    data = plan(scen);
+  }
+
+  init();
+})();
+</script>
+</body>
+</html>
